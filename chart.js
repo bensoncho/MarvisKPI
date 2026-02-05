@@ -33,6 +33,41 @@ async function loadData() {
 loadData();
 
 
+// 更新 KPI 卡片數據
+function updateKPICards() {
+    // 計算總工單數（排除 2月的 0）
+    const validData = data.filter(d => d.value > 0);
+    const totalOrders = validData.reduce((sum, d) => sum + d.value, 0);
+    
+    // 計算月平均產量
+    const avgOrders = Math.round(totalOrders / validData.length);
+    
+    // 計算總錯誤數
+    const totalErrors = data.reduce((sum, d) => sum + d.errorCount, 0);
+    
+    // 計算整體正確率
+    const qualityRate = ((totalOrders - totalErrors) / totalOrders * 100).toFixed(2);
+    
+    // 更新 KPI 卡片
+    document.getElementById('kpi-total').textContent = totalOrders.toLocaleString() + ' 張';
+    document.getElementById('kpi-average').textContent = avgOrders.toLocaleString() + ' 張';
+    document.getElementById('kpi-quality').textContent = qualityRate + '%';
+    document.getElementById('kpi-errors').textContent = totalErrors + ' 張';
+    
+    // 添加淡入動畫
+    const kpiCards = document.querySelectorAll('.kpi-card');
+    kpiCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+
 // 響應式圖表函數
     function createResponsiveChart() {
         // 清除現有圖表
@@ -433,6 +468,91 @@ loadData();
         });
     }
 
+    // 月對月成長圖表函數
+    function createGrowthChart() {
+        d3.select("#growth-chart").selectAll("*").remove();
+        
+        const containerWidth = document.querySelector('.growth-chart-container').clientWidth;
+        const width = Math.min(containerWidth, 1200);
+        const height = 400;
+        const margin = { top: 40, right: 30, bottom: 60, left: 60 };
+        
+        // 準備數據：計算月對月變化百分比
+        const validData = data.filter(d => d.value > 0);
+        const growthData = validData.map((d, i) => {
+            if (i === 0) return { ...d, growth: 0, growthPercent: 0 };
+            const prevValue = validData[i - 1].value;
+            const growth = d.value - prevValue;
+            const growthPercent = ((growth / prevValue) * 100).toFixed(1);
+            return { ...d, growth, growthPercent: parseFloat(growthPercent) };
+        });
+        
+        const svg = d3.select("#growth-chart")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`);
+        
+        const x = d3.scaleBand()
+            .domain(growthData.map(d => d.category))
+            .range([margin.left, width - margin.right])
+      .padding(0.3);
+        
+        const maxValue = d3.max(growthData, d => d.value);
+        const y = d3.scaleLinear()
+            .domain([0, maxValue])
+            .nice()
+            .range([height - margin.bottom, margin.top]);
+        
+        // X軸
+        svg.append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x))
+            .style("font-size", "12px");
+        
+        // Y軸
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y))
+            .style("font-size", "12px");
+        
+        // 繪製柱狀圖
+        svg.selectAll(".growth-bar")
+            .data(growthData)
+            .enter()
+            .append("rect")
+            .attr("class", "growth-bar")
+            .attr("x", d => x(d.category))
+            .attr("y", height - margin.bottom)
+            .attr("width", x.bandwidth())
+            .attr("height", 0)
+            .attr("fill", d => d.growthPercent >= 0 ? "#27ae60" : "#e74c3c")
+            .attr("rx", 6)
+            .style("opacity", 0.8)
+            .transition()
+            .delay((d, i) => i * 100)
+            .duration(800)
+            .attr("y", d => y(d.value))
+            .attr("height", d => y(0) - y(d.value));
+        
+        // 添加成長百分比標籤
+        svg.selectAll(".growth-label")
+            .data(growthData)
+            .enter()
+            .append("text")
+            .attr("class", "growth-label")
+            .attr("x", d => x(d.category) + x.bandwidth() / 2)
+            .attr("y", d => y(d.value) - 5)
+            .attr("text-anchor", "middle")
+            .style("font-size", "11px")
+            .style("font-weight", "600")
+            .style("fill", d => d.growthPercent >= 0 ? "#27ae60" : "#e74c3c")
+            .style("opacity", 0)
+            .text(d => d.growthPercent !== 0 ? `${d.growthPercent > 0 ? '+' : ''}${d.growthPercent}%` : '')
+            .transition()
+            .delay((d, i) => i * 100 + 500)
+            .duration(500)
+            .style("opacity", 1);
+    }
 
 
         // 在檔案末尾添加粒子動畫函數
@@ -534,12 +654,16 @@ loadData();
 
 
         // 初始化圖表
+        updateKPICards();
         createResponsiveChart();
+        createGrowthChart();
         // 監聽視窗大小變化
-        window.addEventListener('resize', createResponsiveChart);
+        window.addEventListener('resize', () => {
+            createResponsiveChart();
+            createGrowthChart();
+            createDonutChart();
+        });
         // 初始化甜甜圈圖
         createDonutChart();
-        // 監聽視窗大小變化
-        window.addEventListener('resize', createDonutChart);
         // 初始化粒子動畫
-        createParticleAnimation();                
+        createParticleAnimation();

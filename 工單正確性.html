@@ -17,9 +17,41 @@
             透過這個圖表，可以直觀地了解工單數量的月度變化趨勢以及品質控管成效。
         </p> 
     </div>    
+    
+    <!-- KPI Summary Cards -->
+    <div class="kpi-container">
+        <div class="kpi-card">
+            <div class="kpi-icon">📊</div>
+            <div class="kpi-value" id="kpi-total">-</div>
+            <div class="kpi-label">總工單數</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">📈</div>
+            <div class="kpi-value" id="kpi-average">-</div>
+            <div class="kpi-label">月平均產量</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-value" id="kpi-quality">-</div>
+            <div class="kpi-label">整體正確率</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">⚠️</div>
+            <div class="kpi-value" id="kpi-errors">-</div>
+            <div class="kpi-label">錯誤總數</div>
+        </div>
+    </div>
+    
     <div class="chart-container">
         <svg id="chart"></svg>
     </div>
+    
+    <!-- Month-over-Month Growth Chart -->
+    <div class="growth-chart-container">
+        <h2 class="chart-section-title">月對月產量變化</h2>
+        <svg id="growth-chart"></svg>
+    </div>
+    
     <div class="analysis-container">
         <h2 class="analysis-title">錯誤工單分析</h2>
         <div class="analysis-content">
