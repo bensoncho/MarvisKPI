@@ -1,0 +1,224 @@
+        /* 修改 body 的樣式 */
+        body {
+            /* 移除原本的 background-color */
+            /* background-color: #f8f9fa; */            
+            /* 添加漸層背景 */
+            /* background: linear-gradient(135deg, #f6f8ff 0%, #e9f2ff 100%); */
+            background: linear-gradient(135deg, #f4eff7 0%, #d1eaee 100%);
+            margin: 0;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            min-height: 100vh; /* 確保背景覆蓋整個視窗高度 */
+        }
+   
+        .page-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .page-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 0 15px;
+        }
+            .chart-container {
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            position: relative;
+            }
+        .bar:hover {
+            opacity: 0.8;
+            cursor: pointer;
+            }
+        .label-group text {
+            font-family: Arial, sans-serif;
+            }
+        /* 響應式樣式 */
+        @media screen and (max-width: 768px) {
+            .page-title {
+                font-size: 20px;
+        }
+            .page-description {
+                font-size: 14px;
+            }
+            .chart-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .value-label {
+                font-size: 10px !important;
+            }
+            .error-label {
+                font-size: 9px !important;
+            }
+        }
+        
+        /* 添加新的分析區塊樣式 */
+        .analysis-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            /* background-color: #ffffff; */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        .analysis-title {
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .analysis-content {
+            color: #34495e;
+            line-height: 1.6;
+            font-size: 16px;
+            padding: 10px 0;
+        }
+        .key-point {
+            background-color: rgba(248, 249, 250, 0.5);  /* 使用 rgba 設定透明度 */
+            padding: 15px 20px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .key-point ul {
+            margin: 10px 0;
+            padding-left: 20px;
+            }
+        .key-point li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            }
+        .analysis-content p {
+            margin: 15px 0;
+            padding: 0 5px;
+        }
+        @media screen and (max-width: 768px) {
+            .analysis-container {
+                padding: 15px;
+                margin: 20px 10px;
+            }
+            .analysis-title {
+                font-size: 18px;
+            }
+            .analysis-content {
+                font-size: 14px;
+            }
+            .key-point {
+                padding: 12px 15px;
+            }
+            .key-point ul {
+                padding-left: 15px;
+            }
+            .key-point li {
+                margin-bottom: 6px;
+            }
+        }
+        
+        /* 在 style 標籤內添加以下樣式 */
+        .donut-chart-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            /* background-color: #ffffff; */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .donut-title {
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .donut-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            margin-right: 6px;
+            border-radius: 2px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .donut-chart-container {
+                padding: 15px;
+                margin: 20px 10px;
+            }
+        }
+
+        .value-label, .error-label {
+            transition: all 0.3s ease;
+            font-weight: normal;
+        }
+
+        .value-label.highlight {
+            font-size: 90% !important;
+            font-weight: bold;
+            fill: #0b07e6 !important;
+            filter: drop-shadow(0px 0px 3px rgba(255,255,255,0.8));
+        }
+
+        .error-label.highlight {
+            font-size: 80% !important;
+            font-weight: bold;
+            fill: #0b07e6 !important;
+            filter: drop-shadow(0px 0px 3px rgba(255,255,255,0.8));
+        }     
+        /* 在現有的 style 標籤中添加 */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* 調整粒子顏色，使其與新背景更協調 */
+        .particle {
+            fill: #3498db;
+            opacity: 0.15; /* 稍微降低粒子透明度 */
+        }            
+
+    .accuracy-line {
+        pointer-events: none;
+    }
+
+    .accuracy-dot {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .accuracy-dot:hover {
+        r: 6;
+        fill: #3498db;
+    }        
