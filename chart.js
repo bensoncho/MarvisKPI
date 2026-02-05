@@ -219,7 +219,10 @@ loadData();
             .style("font-size", `${Math.max(9, width * 0.009)}px`)
             .style("fill", "#666")
             .style("opacity", 0)
-            .text(d => "錯誤率: " + ((d.errorCount / d.value) * 100).toFixed(2) + "%")
+            .text(d => {
+                if (d.value === 0) return "";
+                return "錯誤率: " + ((d.errorCount / d.value) * 100).toFixed(2) + "%";
+            })
             .transition()
             .delay(1000)
             .duration(500)
@@ -234,7 +237,10 @@ loadData();
             .style("font-size", `${Math.max(9, width * 0.009)}px`)
             .style("fill", "#666")
             .style("opacity", 0)
-            .text(d => "錯誤張數: " + d.errorCount)
+            .text(d => {
+                if (d.value === 0) return "無工單";
+                return "錯誤張數: " + d.errorCount;
+            })
             .transition()
             .delay(1000)
             .duration(500)
@@ -264,24 +270,6 @@ loadData();
                     .attr("r", 6)
                     .style("fill", "#e74c3c");
 
-                // 添加準確率提示框
-                const accuracy = (100 - (d.errorCount / d.value * 100)).toFixed(2);
-                const tooltip = svg.append("g")
-                    .attr("class", "accuracy-tooltip");
-
-                tooltip.append("rect")
-                    .attr("x", x(d.category) + x.bandwidth() / 2 - 40)
-                    .attr("y", y2(100 - (d.errorCount / d.value * 100)) - 30)
-                    .attr("width", 80)
-                    .attr("height", 20)
-                    .attr("rx", 5)
-                    .attr("ry", 5)
-                    .style("fill", "rgba(41, 128, 185, 0.9)");
-
-                tooltip.append("text")
-                    .attr("x", x(d.category) + x.bandwidth() / 2)
-                    .attr("y", y2(100 - (d.errorCount / d.value * 100)) - 15)
-                    .attr("text-anchor", "middle")
                     .style("fill", "white")
                     .style("font-size", "12px")
                     .text(`${accuracy}%`);
