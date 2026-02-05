@@ -11,28 +11,48 @@
             min-height: 100vh; /* 確保背景覆蓋整個視窗高度 */
         }
    
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto 50px;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
         .page-title {
-            text-align: center;
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 24px;
-            font-weight: bold;
+            color: #1a202c;
+            margin: 0 0 24px;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(52, 152, 219, 0.1);
         }
+
         .page-description {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 16px;
-            line-height: 1.5;
-            padding: 0 15px;
+            color: #4a5568;
+            font-size: 18px;
+            line-height: 1.8;
+            font-weight: 400;
+            margin: 0;
         }
-            .chart-container {
+        .chart-container {
             width: 100%;
             max-width: 1200px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 0 auto;
             position: relative;
-            }
+            padding: 40px 20px;
+            /* Apply Glassmorphism */
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border-radius: 24px;
+        }
         .bar:hover {
             opacity: 0.8;
             cursor: pointer;
@@ -64,12 +84,20 @@
         .analysis-container {
             width: 100%;
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            /* background-color: #ffffff; */
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 40px auto;
+            padding: 40px;
+            /* Apply Glassmorphism */
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border-radius: 24px;
             box-sizing: border-box;
+            transition: transform 0.3s ease;
+        }
+        .analysis-container:hover {
+            transform: translateY(-5px);
         }
         .analysis-title {
             color: #2c3e50;
@@ -86,11 +114,12 @@
             padding: 10px 0;
         }
         .key-point {
-            background-color: rgba(248, 249, 250, 0.5);  /* 使用 rgba 設定透明度 */
-            padding: 15px 20px;
-            border-left: 4px solid #3498db;
-            margin: 15px 0;
-            border-radius: 0 4px 4px 0;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 20px 30px;
+            border-left: 6px solid #3498db;
+            margin: 20px 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 16px;
         }
         .key-point ul {
             margin: 10px 0;
@@ -127,16 +156,25 @@
         }
         
         /* 在 style 標籤內添加以下樣式 */
+        /* 在 style 標籤內添加以下樣式 */
         .donut-chart-container {
             width: 100%;
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            /* background-color: #ffffff; */
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 40px auto;
+            padding: 40px;
+            /* Apply Glassmorphism */
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border-radius: 24px;
             box-sizing: border-box;
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .donut-chart-container:hover {
+            transform: translateY(-5px);
         }
 
         .donut-title {
