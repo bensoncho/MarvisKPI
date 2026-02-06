@@ -403,17 +403,6 @@ function updateKPICards() {
                 // 移除準確率提示框
                 svg.selectAll(".accuracy-tooltip").remove();
             });
-
-    // 添加圖表標題
-    const titleColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", margin.top / 2)
-        .attr("text-anchor", "middle")
-            .style("font-size", `${Math.max(14, width * 0.015)}px`)
-        .style("font-weight", "bold")
-        .style("fill", titleColor)
-        .text("2025年每月工單數量及錯誤率趨勢");
     }
 
     // 甜甜圈圖表函數
