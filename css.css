@@ -383,39 +383,155 @@ pre {
             transform: translateY(-5px);
         }
 
-        .donut-title {
-            color: var(--text-primary);
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .donut-legend {
+        /* 排行榜卡片樣式 - UI/UX Pro Max */
+        #ranking-container {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .legend-item {
+        .rank-card {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            padding: 20px;
             display: flex;
             align-items: center;
-            font-size: 14px;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* For animation */
+        }
+
+        [data-theme="dark"] .rank-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .rank-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .rank-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 1;
+        }
+
+        .rank-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .rank-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        /* Gold */
+        .rank-1 .rank-badge {
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+            border: 2px solid #FDB931;
+        }
+        .rank-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border-left: 4px solid #FFD700;
+        }
+
+        /* Silver */
+        .rank-2 .rank-badge {
+            background: linear-gradient(135deg, #E0E0E0, #BDBDBD);
+            border: 2px solid #BDBDBD;
+        }
+        .rank-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border-left: 4px solid #C0C0C0;
+        }
+
+        /* Bronze */
+        .rank-3 .rank-badge {
+            background: linear-gradient(135deg, #CD7F32, #A0522D);
+            border: 2px solid #A0522D;
+        }
+        .rank-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border-left: 4px solid #CD7F32;
+        }
+
+        .rank-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rank-month {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .rank-volume {
+            font-size: 1rem;
             color: var(--text-secondary);
         }
 
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            margin-right: 6px;
-            border-radius: 2px;
+        .rank-stat {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            z-index: 1;
         }
+
+        .rank-progress-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .rank-progress-fill {
+            height: 100%;
+            border-radius: 0 4px 4px 0;
+            transition: width 1s ease-out;
+        }
+
+        .rank-1 .rank-progress-fill { background: #FFD700; }
+        .rank-2 .rank-progress-fill { background: #C0C0C0; }
+        .rank-3 .rank-progress-fill { background: #CD7F32; }
 
         @media screen and (max-width: 768px) {
             .donut-chart-container {
                 padding: 15px;
                 margin: 20px 10px;
+            }
+            .rank-badge {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            .rank-stat {
+                font-size: 1.2rem;
             }
         }
 

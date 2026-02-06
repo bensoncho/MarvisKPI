@@ -14,6 +14,22 @@ let data = [
     { "category": "2月", "value": 0, "errorCount": 0 }
 ];
 
+// 2024年每月工單數據（2024/3 - 2025/2）
+let lastYearData = [
+    { "category": "3月", "value": 476, "errorCount": 0 },
+    { "category": "4月", "value": 596, "errorCount": 0 },
+    { "category": "5月", "value": 425, "errorCount": 0 },
+    { "category": "6月", "value": 398, "errorCount": 0 },
+    { "category": "7月", "value": 560, "errorCount": 0 },
+    { "category": "8月", "value": 743, "errorCount": 0 },
+    { "category": "9月", "value": 1036, "errorCount": 0 },
+    { "category": "10月", "value": 1240, "errorCount": 0 },
+    { "category": "11月", "value": 1427, "errorCount": 0 },
+    { "category": "12月", "value": 1358, "errorCount": 0 },
+    { "category": "1月", "value": 332, "errorCount": 0 },
+    { "category": "2月", "value": 100, "errorCount": 0 }
+];
+
 // 從 JSON 檔案讀取數據 (要放 Server 才有用，先取消)
 async function loadData() {
     try {
@@ -30,7 +46,8 @@ async function loadData() {
 }
 
 // 呼叫加載數據函數
-loadData();
+// 呼叫加載數據函數
+// loadData();
 
 
 // 更新 KPI 卡片數據
@@ -166,7 +183,10 @@ function updateKPICards() {
     // 創建折線生成器
     const line = d3.line()
     .x(d => x(d.category) + x.bandwidth() / 2)
-    .y(d => y2(100 - (d.errorCount / d.value * 100)))
+    .y(d => {
+        if (d.value === 0) return y2(100); // 如果沒有工單，視為 100% 正確率（或不顯示）
+        return y2(100 - (d.errorCount / d.value * 100));
+    })
     .curve(d3.curveMonotoneX);  // 使用 monotone 插值使曲線更平滑
 
     // 添加準確率折線
@@ -197,7 +217,11 @@ function updateKPICards() {
     .append("circle")
     .attr("class", "accuracy-dot")
     .attr("cx", d => x(d.category) + x.bandwidth() / 2)
-    .attr("cy", d => y2(100 - (d.errorCount / d.value * 100)))
+    .attr("cx", d => x(d.category) + x.bandwidth() / 2)
+    .attr("cy", d => {
+        if (d.value === 0) return y2(100);
+        return y2(100 - (d.errorCount / d.value * 100));
+    })
     .attr("r", 5)
     .style("fill", "#ffffff")
     .style("stroke", "#3498db")
@@ -386,123 +410,52 @@ function updateKPICards() {
     }
 
     // 甜甜圈圖表函數
-    function createDonutChart() {
-        // 清除現有圖表
-        d3.select("#donut-chart").selectAll("*").remove();
+    // 排行榜卡片函數
+    function createRankingCards() {
+        const container = document.getElementById('ranking-container');
+        container.innerHTML = ''; // 清除現有內容
 
-        // 設定圖表尺寸
-        const containerWidth = document.querySelector('.donut-chart-container').clientWidth;
-        const width = Math.min(containerWidth, 600);
-        const height = width;
-        const radius = Math.min(width, height) / 2;
-
-        // 設定數據
+        // 準備數據：排序並取前三
         const top3_data = [...data]
             .sort((a, b) => b.value - a.value)
-            .slice(0, 3)
-            .map((d, i) => ({
-                name: d.category + "份工單",
-                value: d.value,
-                color: ["#3498db", "#2ecc71", "#9b59b6"][i]
-            }));
-        // 建立SVG元素
-        const svg = d3.select("#donut-chart")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("transform", `translate(${width/2},${height/2})`);
+            .slice(0, 3);
 
-        // 建立圓餅圖生成器
-        const pie = d3.pie()
-            .value(d => d.value)
-            .sort(null);
+        const maxValue = top3_data[0].value;
 
-        // 建立弧形生成器
-        const arc = d3.arc()
-            .innerRadius(radius * 0.6)
-            .outerRadius(radius * 0.8);
+        top3_data.forEach((d, index) => {
+            const rank = index + 1;
+            const percentage = (d.value / maxValue * 100).toFixed(1);
+            
+            const card = document.createElement('div');
+            card.className = `rank-card rank-${rank}`;
+            
+            card.innerHTML = `
+                <div class="rank-info">
+                    <div class="rank-badge">${rank}</div>
+                    <div class="rank-details">
+                        <div class="rank-month">${d.category}</div>
+                        <div class="rank-volume">工單數量</div>
+                    </div>
+                </div>
+                <div class="rank-stat">${d.value} 張</div>
+                <div class="rank-progress-bg">
+                    <div class="rank-progress-fill" style="width: 0%"></div>
+                </div>
+            `;
+            
+            container.appendChild(card);
 
-        // 建立標籤弧形生成器
-        const labelArc = d3.arc()
-            .innerRadius(radius * 0.9)
-            .outerRadius(radius * 0.9);
-
-        // 繪製甜甜圈圖並添加動畫
-        const arcs = svg.selectAll("arc")
-            .data(pie(top3_data))
-            .enter()
-            .append("g");
-        arcs.append("path")
-            .attr("d", arc)
-            .attr("fill", d => d.data.color)
-            .style("opacity", 0)
-            .style("stroke", "white")
-            .style("stroke-width", 2)
-            .transition()
-            .duration(1000)
-            .style("opacity", 0.8)
-            .attrTween("d", function(d) {
-                const interpolate = d3.interpolate({startAngle: 0, endAngle: 0}, d);
-                return function(t) {
-                    return arc(interpolate(t));
-                };
-            });
-
-        // 添加數值標籤
-        arcs.append("text")
-            .attr("transform", d => {
-                const centroid = arc.centroid(d);
-                return `translate(${centroid[0]},${centroid[1]})`;
-            })
-            .attr("text-anchor", "middle")
-            .style("font-size", "14px")
-            .style("fill", "#666")
-            .style("opacity", 0)
-            .text(d => d.data.name + ' ' + d.data.value + "張")
-            .transition()
-            .delay(1000)
-            .duration(500)
-            .style("opacity", 1);
-
-        // 添加標題並添加淡入動畫
-        const title = d3.select("#donut-chart")
-            .append("text")
-            .attr("x", width/2)
-            .attr("y", 30)
-            .attr("text-anchor", "middle")
-            .style("font-size", "20px")
-            .style("font-weight", "bold")
-            .style("opacity", 0)
-            .text("每月工單高峰期");
-
-        title.transition()
-            .duration(1000)
-                .style("opacity", 1);
-
-        // 清除現有圖例
-        d3.select(".donut-legend").remove();
-
-        // 添加圖例並添加淡入動畫
-        const legend = d3.select(".donut-chart-container")
-            .append("div")
-            .attr("class", "donut-legend");
-
-        top3_data.forEach((item, index) => {            
-            const legendItem = legend.append("div")
-                .attr("class", "legend-item")
-                .style("opacity", 0);
-
-            legendItem.append("div")
-                .attr("class", "legend-color")
-                .style("background-color", item.color);
-
-            legendItem.append("span")
-                .text(`${item.name}: ${item.value}張`);
-
-            legendItem.transition()
-                .delay(index * 200)
-                .duration(500)
-                .style("opacity", 1);
+            // 動畫進場
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+                
+                // 進度條動畫
+                setTimeout(() => {
+                    const progressBar = card.querySelector('.rank-progress-fill');
+                    progressBar.style.width = `${percentage}%`;
+                }, 300);
+            }, index * 200);
         });
     }
 
@@ -596,8 +549,195 @@ function updateKPICards() {
     }
 
 
-        // 在檔案末尾添加粒子動畫函數
-        function createParticleAnimation() {
+        // 年度工單數量對比圖表 (YoY)
+    function createYoYChart() {
+        d3.select("#yoy-chart").selectAll("*").remove();
+        
+        const containerWidth = document.querySelector('.chart-container').clientWidth;
+        const width = Math.min(containerWidth, 1200);
+        const height = 400;
+        const margin = { top: 40, right: 30, bottom: 60, left: 60 };
+        
+        const svg = d3.select("#yoy-chart")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`);
+        
+        // X軸
+        const x = d3.scalePoint()
+            .domain(data.map(d => d.category))
+            .range([margin.left, width - margin.right])
+            .padding(0.5); // Align points nicely
+            
+        // Y軸
+        const maxValue = Math.max(
+            d3.max(data, d => d.value),
+            d3.max(lastYearData, d => d.value)
+        );
+        
+        const y = d3.scaleLinear()
+            .domain([0, maxValue * 1.1])
+            .range([height - margin.bottom, margin.top]);
+            
+        // 軸線樣式
+        const xAxis = g => g
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x))
+            .call(g => g.select(".domain").attr("stroke", "var(--axis-color)"))
+            .call(g => g.selectAll(".tick line").attr("stroke", "var(--axis-color)"))
+            .call(g => g.selectAll(".tick text")
+                .attr("fill", "var(--text-secondary)")
+                .attr("font-size", "12px"));
+                
+        const yAxis = g => g
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y).ticks(5))
+            .call(g => g.select(".domain").remove())
+            .call(g => g.selectAll(".tick line")
+                .attr("stroke", "var(--container-border)")
+                .attr("stroke-dasharray", "2,2"))
+            .call(g => g.selectAll(".tick text")
+                .attr("fill", "var(--text-secondary)")
+                .attr("font-size", "12px"));
+                
+        svg.append("g").call(xAxis);
+        svg.append("g").call(yAxis);
+        
+        // 線條生成器
+        const line = d3.line()
+            .x(d => x(d.category))
+            .y(d => y(d.value))
+            .curve(d3.curveMonotoneX); // Smooth curve
+            
+        // 繪製去年 (灰色虛線)
+        const pathLast = svg.append("path")
+            .datum(lastYearData)
+            .attr("fill", "none")
+            .attr("stroke", "#95a5a6")
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", "5,5")
+            .attr("d", line)
+            .style("opacity", 0);
+            
+        // 繪製今年 (主色實線)
+        const pathCurrent = svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "#3498db")
+            .attr("stroke-width", 3)
+            .attr("d", line)
+            .style("opacity", 0);
+            
+        // 動畫
+        pathLast.transition().duration(1000).style("opacity", 0.7);
+        pathCurrent.transition().delay(500).duration(1000).style("opacity", 1);
+        
+        // 數據點與 Tooltips
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "chart-tooltip")
+            .style("opacity", 0);
+            
+        // 整合數據以方便交互
+        const combinedData = data.map((d, i) => ({
+            category: d.category,
+            current: d.value,
+            last: i < lastYearData.length ? lastYearData[i].value : 0,
+            growth: i < lastYearData.length && lastYearData[i].value > 0 
+                ? ((d.value - lastYearData[i].value) / lastYearData[i].value * 100).toFixed(1) 
+                : 'N/A'
+        }));
+        
+        // 互動層
+        const hoverGroup = svg.append("g")
+            .attr("class", "hover-overlay")
+            .style("opacity", 0);
+            
+        const verticalLine = hoverGroup.append("line")
+            .attr("y1", margin.top)
+            .attr("y2", height - margin.bottom)
+            .attr("stroke", "rgba(52, 152, 219, 0.5)")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", "3,3");
+            
+        const dotCurrent = hoverGroup.append("circle")
+            .attr("r", 6)
+            .attr("fill", "#3498db")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2);
+            
+        const dotLast = hoverGroup.append("circle")
+            .attr("r", 5)
+            .attr("fill", "#95a5a6")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2);
+            
+        // 互動區域
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .on("mousemove", function(event) {
+                const [mouseX] = d3.pointer(event);
+                
+                // 找到最近的數據點
+                const bandwidth = (width - margin.left - margin.right) / (combinedData.length - 1);
+                const index = Math.round((mouseX - margin.left) / bandwidth);
+                
+                if (index >= 0 && index < combinedData.length) {
+                    const d = combinedData[index];
+                    const xPos = x(d.category);
+                    
+                    hoverGroup.style("opacity", 1);
+                    verticalLine.attr("x1", xPos).attr("x2", xPos);
+                    
+                    dotCurrent
+                        .attr("cx", xPos)
+                        .attr("cy", y(d.current));
+                        
+                    dotLast
+                        .attr("cx", xPos)
+                        .attr("cy", y(d.last));
+                        
+                    tooltip.transition().duration(50).style("opacity", 0.9);
+                    tooltip.html(`
+                        <div style="font-weight:bold; margin-bottom:5px;">${d.category}</div>
+                        <div style="color:#3498db;">今年: ${d.current}</div>
+                        <div style="color:#95a5a6;">去年: ${d.last}</div>
+                        <div style="color:${d.growth >= 0 ? '#2ecc71' : '#e74c3c'}; font-size: 0.9em; margin-top:5px;">
+                            YoY: ${d.growth > 0 ? '+' : ''}${d.growth}%
+                        </div>
+                    `)
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+                }
+            })
+            .on("mouseout", function() {
+                hoverGroup.style("opacity", 0);
+                tooltip.transition().duration(200).style("opacity", 0);
+            });
+            
+        // Legend
+        const legend = svg.append("g")
+            .attr("transform", `translate(${width - margin.right - 150}, ${margin.top})`);
+            
+        // Current Year Legend
+        legend.append("line")
+            .attr("x1", 0).attr("x2", 20).attr("y1", 0).attr("y2", 0)
+            .attr("stroke", "#3498db").attr("stroke-width", 3);
+        legend.append("text").attr("x", 30).attr("y", 4)
+            .text("2025 (今年)").attr("fill", "var(--text-primary)").style("font-size", "12px");
+            
+        // Last Year Legend
+        legend.append("line")
+            .attr("x1", 0).attr("x2", 20).attr("y1", 20).attr("y2", 20)
+            .attr("stroke", "#95a5a6").attr("stroke-width", 2).attr("stroke-dasharray", "5,5");
+        legend.append("text").attr("x", 30).attr("y", 24)
+            .text("2024 (去年)").attr("fill", "var(--text-secondary)").style("font-size", "12px");
+    }
+
+    // 在檔案末尾添加粒子動畫函數
+    function createParticleAnimation() {
             const svg = d3.select("#background-animation");
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -702,10 +842,13 @@ function updateKPICards() {
         window.addEventListener('resize', () => {
             createResponsiveChart();
             createGrowthChart();
-            createDonutChart();
+            createRankingCards();
+            createYoYChart();
         });
-        // 初始化甜甜圈圖
-        createDonutChart();
+        // 初始化排行榜
+        createRankingCards();
+        // 初始化YoY圖表
+        createYoYChart();
         // 初始化粒子動畫
         createParticleAnimation();
 
