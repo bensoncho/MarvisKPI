@@ -459,94 +459,7 @@ function updateKPICards() {
         });
     }
 
-    // 月對月成長圖表函數
-    function createGrowthChart() {
-        d3.select("#growth-chart").selectAll("*").remove();
-        
-        const containerWidth = document.querySelector('.growth-chart-container').clientWidth;
-        const width = Math.min(containerWidth, 1200);
-        const height = 400;
-        const margin = { top: 40, right: 30, bottom: 60, left: 60 };
-        
-        // 準備數據：計算月對月變化百分比
-        const validData = data.filter(d => d.value > 0);
-        const growthData = validData.map((d, i) => {
-            if (i === 0) return { ...d, growth: 0, growthPercent: 0 };
-            const prevValue = validData[i - 1].value;
-            const growth = d.value - prevValue;
-            const growthPercent = ((growth / prevValue) * 100).toFixed(1);
-            return { ...d, growth, growthPercent: parseFloat(growthPercent) };
-        });
-        
-        const svg = d3.select("#growth-chart")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("viewBox", `0 0 ${width} ${height}`);
-        
-        const x = d3.scaleBand()
-            .domain(growthData.map(d => d.category))
-            .range([margin.left, width - margin.right])
-      .padding(0.3);
-        
-        const maxValue = d3.max(growthData, d => d.value);
-        const y = d3.scaleLinear()
-            .domain([0, maxValue])
-            .nice()
-            .range([height - margin.bottom, margin.top]);
-        
-        // X軸
-        const axisColor = getComputedStyle(document.documentElement).getPropertyValue('--axis-color').trim();
-        svg.append("g")
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(x))
-            .style("font-size", "12px")
-            .style("color", axisColor);
-        
-        // Y軸
-        svg.append("g")
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(y))
-            .style("font-size", "12px")
-            .style("color", axisColor);
-        
-        // 繪製柱狀圖
-        svg.selectAll(".growth-bar")
-            .data(growthData)
-            .enter()
-            .append("rect")
-            .attr("class", "growth-bar")
-            .attr("x", d => x(d.category))
-            .attr("y", height - margin.bottom)
-            .attr("width", x.bandwidth())
-            .attr("height", 0)
-            .attr("fill", d => d.growthPercent >= 0 ? "#27ae60" : "#e74c3c")
-            .attr("rx", 6)
-            .style("opacity", 0.8)
-            .transition()
-            .delay((d, i) => i * 100)
-            .duration(800)
-            .attr("y", d => y(d.value))
-            .attr("height", d => y(0) - y(d.value));
-        
-        // 添加成長百分比標籤
-        svg.selectAll(".growth-label")
-            .data(growthData)
-            .enter()
-            .append("text")
-            .attr("class", "growth-label")
-            .attr("x", d => x(d.category) + x.bandwidth() / 2)
-            .attr("y", d => y(d.value) - 5)
-            .attr("text-anchor", "middle")
-            .style("font-size", "11px")
-            .style("font-weight", "600")
-            .style("fill", d => d.growthPercent >= 0 ? "#27ae60" : "#e74c3c")
-            .style("opacity", 0)
-            .text(d => d.growthPercent !== 0 ? `${d.growthPercent > 0 ? '+' : ''}${d.growthPercent}%` : '')
-            .transition()
-            .delay((d, i) => i * 100 + 500)
-            .duration(500)
-            .style("opacity", 1);
-    }
+
 
 
         // 年度工單數量對比圖表 (YoY)
@@ -877,11 +790,11 @@ function updateKPICards() {
         // 初始化圖表
         updateKPICards();
         createResponsiveChart();
-        createGrowthChart();
+
         // 監聽視窗大小變化
         window.addEventListener('resize', () => {
             createResponsiveChart();
-            createGrowthChart();
+
             createRankingCards();
             createYoYChart();
         });
@@ -904,7 +817,7 @@ function toggleTheme() {
     
     // Redraw charts to update colors
     createResponsiveChart();
-    createGrowthChart();
+
 }
 
 function updateThemeIcon(theme) {
