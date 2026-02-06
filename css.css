@@ -1,14 +1,75 @@
+        /* CSS Variables for Theme */
+        :root {
+            --bg-gradient-start: #f4eff7;
+            --bg-gradient-end: #d1eaee;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-gradient-start: #2c3e50;
+            --text-gradient-end: #3498db;
+            --container-bg: rgba(255, 255, 255, 0.65);
+            --container-border: rgba(255, 255, 255, 0.5);
+            --kpi-card-bg: rgba(255, 255, 255, 0.7);
+            --shadow-color: rgba(31, 38, 135, 0.1);
+            --axis-color: #666;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-gradient-start: #64b5f6;
+            --text-gradient-end: #81c784;
+            --container-bg: rgba(30, 30, 50, 0.7);
+            --container-border: rgba(100, 100, 150, 0.3);
+            --kpi-card-bg: rgba(40, 40, 60, 0.8);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --axis-color: #aaa;
+        }
+
         /* 修改 body 的樣式 */
         body {
-            /* 移除原本的 background-color */
-            /* background-color: #f8f9fa; */            
-            /* 添加漸層背景 */
-            /* background: linear-gradient(135deg, #f6f8ff 0%, #e9f2ff 100%); */
-            background: linear-gradient(135deg, #f4eff7 0%, #d1eaee 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             margin: 0;
             padding: 10px;
             font-family: Arial, sans-serif;
-            min-height: 100vh; /* 確保背景覆蓋整個視窗高度 */
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--container-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px var(--shadow-color);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .theme-icon {
+            transition: transform 0.3s ease;
         }
    
         .header-container {
@@ -20,20 +81,21 @@
         }
 
         .page-title {
-            color: #1a202c;
+            color: var(--text-primary);
             margin: 0 0 24px;
             font-size: 42px;
             font-weight: 800;
             letter-spacing: -1px;
             line-height: 1.2;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, var(--text-gradient-start) 0%, var(--text-gradient-end) 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 2px 10px rgba(52, 152, 219, 0.1);
         }
 
         .page-description {
-            color: #4a5568;
+            color: var(--text-secondary);
             font-size: 18px;
             line-height: 1.8;
             font-weight: 400;
@@ -51,20 +113,20 @@
         }
 
         .kpi-card {
-            background: rgba(255, 255, 255, 0.7);
+            background: var(--kpi-card-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--container-border);
             border-radius: 16px;
             padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .kpi-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+            box-shadow: 0 12px 40px 0 var(--shadow-color);
         }
 
         .kpi-icon {
@@ -76,9 +138,9 @@
         .kpi-value {
             font-size: 36px;
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--text-primary);
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, var(--text-gradient-start) 0%, var(--text-gradient-end) 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -86,7 +148,7 @@
 
         .kpi-label {
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
             letter-spacing: 0.5px;
         }
@@ -97,12 +159,11 @@
             margin: 0 auto;
             position: relative;
             padding: 40px 20px;
-            /* Apply Glassmorphism */
-            background: rgba(255, 255, 255, 0.65);
+            background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border: 1px solid var(--container-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             border-radius: 24px;
         }
 
@@ -113,11 +174,11 @@
             margin: 40px auto;
             position: relative;
             padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.65);
+            background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border: 1px solid var(--container-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             border-radius: 24px;
         }
 
@@ -125,9 +186,9 @@
             text-align: center;
             font-size: 24px;
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--text-primary);
             margin: 0 0 30px 0;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, var(--text-gradient-start) 0%, var(--text-gradient-end) 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -166,12 +227,11 @@
             max-width: 1200px;
             margin: 40px auto;
             padding: 40px;
-            /* Apply Glassmorphism */
-            background: rgba(255, 255, 255, 0.65);
+            background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border: 1px solid var(--container-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             border-radius: 24px;
             box-sizing: border-box;
             transition: transform 0.3s ease;
@@ -180,23 +240,23 @@
             transform: translateY(-5px);
         }
         .analysis-title {
-            color: #2c3e50;
+            color: var(--text-primary);
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 15px;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 2px solid var(--text-gradient-end);
             padding-bottom: 10px;
         }
         .analysis-content {
-            color: #34495e;
+            color: var(--text-secondary);
             line-height: 1.6;
             font-size: 16px;
             padding: 10px 0;
         }
         .key-point {
-            background-color: rgba(255, 255, 255, 0.6);
+            background-color: var(--kpi-card-bg);
             padding: 20px 30px;
-            border-left: 6px solid #3498db;
+            border-left: 6px solid var(--text-gradient-end);
             margin: 20px 0;
             border-radius: 0 12px 12px 0;
             font-size: 16px;
@@ -242,12 +302,11 @@
             max-width: 1200px;
             margin: 40px auto;
             padding: 40px;
-            /* Apply Glassmorphism */
-            background: rgba(255, 255, 255, 0.65);
+            background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border: 1px solid var(--container-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             border-radius: 24px;
             box-sizing: border-box;
             text-align: center;
@@ -258,7 +317,7 @@
         }
 
         .donut-title {
-            color: #2c3e50;
+            color: var(--text-primary);
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 20px;
@@ -276,7 +335,7 @@
             display: flex;
             align-items: center;
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .legend-color {

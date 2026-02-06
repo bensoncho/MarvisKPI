@@ -95,17 +95,50 @@ function updateKPICards() {
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "xMidYMid meet");
 
-            // 定義顏色比例尺
-            const colorScale = d3.scaleLinear()
-                .domain([0, data.length - 1])
-                .range(["#FF9999", "#99CCFF"])
-                .interpolate(d3.interpolateHcl);
+            // 定義更鮮豔的漸層色比例尺
+            const colors = [
+                "#FF6B9D", "#C44569", 
+                "#FFA726", "#FF7043",
+                "#66BB6A", "#26A69A",
+                "#42A5F5", "#5C6BC0",
+                "#AB47BC", "#7E57C2",
+                "#EC407A", "#8E24AA"
+            ];
+            
+            const colorScale = d3.scaleOrdinal()
+                .domain(data.map(d => d.category))
+                .range(colors);
+            
+            // 添加 SVG 漸層定義
+            const defs = svg.append("defs");
+            
+            // 為每個類別創建漸層（使用類別名稱作為ID以確保一致性）
+            data.forEach((d) => {
+                const safeId = d.category.replace(/[^a-zA-Z0-9]/g, ''); // 移除特殊字元
+                const gradient = defs.append("linearGradient")
+                    .attr("id", `bar-gradient-${safeId}`)
+                    .attr("x1", "0%")
+                    .attr("y1", "100%")
+                    .attr("x2", "0%")
+                    .attr("y2", "0%");
+                
+                const baseColor = colorScale(d.category);
+                gradient.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", baseColor)
+                    .attr("stop-opacity", 0.8);
+                
+                gradient.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", baseColor)
+                    .attr("stop-opacity", 1);
+            });
         
     // 設定 x 和 y 軸的比例尺
     const x = d3.scaleBand()
-        .domain(data.map(d => d.category))
+        .domain(data.map(d => d.category)) // 保持原始資料的順序（時間順序）
         .range([margin.left, width - margin.right])
-        .padding(0.1);
+        .padding(0.3);
 
     // 添加右側 Y 軸的比例尺（用於準確率）
     const y2 = d3.scaleLinear()
@@ -141,11 +174,11 @@ function updateKPICards() {
     .datum(data)
     .attr("class", "accuracy-line")
     .attr("fill", "none")
-    .attr("stroke", "#2980b9")
-    .attr("stroke-width", 2)
+    .attr("stroke", "#3498db")
+    .attr("stroke-width", 3)
     .attr("d", line)
     .style("opacity", 0)
-    .style("filter", "drop-shadow(2px 2px 3px rgba(0,0,0,0.1))");
+    .style("filter", "drop-shadow(0px 2px 4px rgba(52, 152, 219, 0.3))");
 
     // 添加折線動畫
     const pathLength = path.node().getTotalLength();
@@ -165,10 +198,12 @@ function updateKPICards() {
     .attr("class", "accuracy-dot")
     .attr("cx", d => x(d.category) + x.bandwidth() / 2)
     .attr("cy", d => y2(100 - (d.errorCount / d.value * 100)))
-    .attr("r", 4)
-    .style("fill", "#2980b9")
+    .attr("r", 5)
+    .style("fill", "#ffffff")
+    .style("stroke", "#3498db")
+    .style("stroke-width", 2.5)
     .style("opacity", 0)
-    .style("filter", "drop-shadow(2px 2px 3px rgba(0,0,0,0.1))");
+    .style("filter", "drop-shadow(0px 2px 6px rgba(52, 152, 219, 0.4))");
 
     // 添加數據點動畫
     dots.transition()
@@ -182,18 +217,19 @@ function updateKPICards() {
         .range([height - margin.bottom, margin.top]);
 
     // 繪製 x 軸
+    const axisColor = getComputedStyle(document.documentElement).getPropertyValue('--axis-color').trim();
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x))
             .style("font-size", `${Math.max(10, width * 0.01)}px`)
-        .style("color", "#666");
+        .style("color", axisColor);
 
     // 繪製 y 軸
     svg.append("g")
         .attr("transform", `translate(${margin.left},0)`)
         .call(d3.axisLeft(y))
             .style("font-size", `${Math.max(10, width * 0.01)}px`)
-        .style("color", "#666");
+        .style("color", axisColor);
 
     // 添加 Y 軸標籤
     svg.append("text")
@@ -202,10 +238,11 @@ function updateKPICards() {
         .attr("x", -(height / 2))
         .attr("text-anchor", "middle")
             .style("font-size", `${Math.max(12, width * 0.012)}px`)
+        .style("fill", axisColor)
         .text("工單數量");
 
     // 繪製柱狀圖並添加動畫效果
-    svg.selectAll(".bar")
+    const bars = svg.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
@@ -214,14 +251,37 @@ function updateKPICards() {
         .attr("y", height - margin.bottom)
         .attr("width", x.bandwidth())
         .attr("height", 0)
-        .attr("fill", (d, i) => colorScale(i))
-            .attr("rx", Math.max(3, width * 0.005))
-            .attr("ry", Math.max(3, width * 0.005))
-        .style("filter", "drop-shadow(2px 2px 3px rgba(0,0,0,0.2))")
+        .attr("fill", d => {
+            const safeId = d.category.replace(/[^a-zA-Z0-9]/g, '');
+            return `url(#bar-gradient-${safeId})`;
+        })
+        .attr("rx", Math.max(6, width * 0.008))
+        .attr("ry", Math.max(6, width * 0.008))
+        .style("filter", "drop-shadow(0px 4px 8px rgba(0,0,0,0.15))")
+        .style("cursor", "pointer")
         .transition()
-        .duration(1000)
+        .delay((d, i) => i * 80)
+        .duration(1200)
+        .ease(d3.easeBounceOut)
         .attr("y", d => y(d.value))
         .attr("height", d => y(0) - y(d.value));
+    
+    // 加強 hover 效果
+    svg.selectAll(".bar")
+        .on("mouseenter", function() {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .style("filter", "drop-shadow(0px 8px 16px rgba(0,0,0,0.3))")
+                .attr("transform", "scale(1.05)");
+        })
+        .on("mouseleave", function() {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .style("filter", "drop-shadow(0px 4px 8px rgba(0,0,0,0.15))")
+                .attr("transform", "scale(1)");
+        });
 
         // 修改標籤組的部分
         const labelGroups = svg.selectAll(".label-group")
@@ -231,13 +291,14 @@ function updateKPICards() {
             .attr("class", "label-group");
 
         // 添加工單數量標籤
+        const labelColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim();
         const valueLabels = labelGroups.append("text")
             .attr("class", "value-label")
             .attr("x", d => x(d.category) + x.bandwidth() / 2)
             .attr("y", d => y(d.value) - 5)
             .attr("text-anchor", "middle")
             .style("font-size", `${Math.max(10, width * 0.01)}px`)
-            .style("fill", "#666")
+            .style("fill", labelColor)
             .style("opacity", 0)
             .text(d => d.value + "張")
             .transition()
@@ -252,9 +313,12 @@ function updateKPICards() {
             .attr("y", d => y(d.value) + 15)
             .attr("text-anchor", "middle")
             .style("font-size", `${Math.max(9, width * 0.009)}px`)
-            .style("fill", "#666")
+            .style("fill", labelColor)
             .style("opacity", 0)
-            .text(d => "錯誤率: " + ((d.errorCount / d.value) * 100).toFixed(2) + "%")
+            .text(d => {
+                if (d.value === 0) return "";
+                return "錯誤率: " + ((d.errorCount / d.value) * 100).toFixed(2) + "%";
+            })
             .transition()
             .delay(1000)
             .duration(500)
@@ -267,9 +331,12 @@ function updateKPICards() {
             .attr("y", d => y(d.value) + 30)
             .attr("text-anchor", "middle")
             .style("font-size", `${Math.max(9, width * 0.009)}px`)
-            .style("fill", "#666")
+            .style("fill", labelColor)
             .style("opacity", 0)
-            .text(d => "錯誤張數: " + d.errorCount)
+            .text(d => {
+                if (d.value === 0) return "無工單";
+                return "錯誤張數: " + d.errorCount;
+            })
             .transition()
             .delay(1000)
             .duration(500)
@@ -338,12 +405,14 @@ function updateKPICards() {
             });
 
     // 添加圖表標題
+    const titleColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", margin.top / 2)
         .attr("text-anchor", "middle")
             .style("font-size", `${Math.max(14, width * 0.015)}px`)
         .style("font-weight", "bold")
+        .style("fill", titleColor)
         .text("2025年每月工單數量及錯誤率趨勢");
     }
 
@@ -359,7 +428,7 @@ function updateKPICards() {
         const radius = Math.min(width, height) / 2;
 
         // 設定數據
-        const top3_data = data
+        const top3_data = [...data]
             .sort((a, b) => b.value - a.value)
             .slice(0, 3)
             .map((d, i) => ({
@@ -504,16 +573,19 @@ function updateKPICards() {
             .range([height - margin.bottom, margin.top]);
         
         // X軸
+        const axisColor = getComputedStyle(document.documentElement).getPropertyValue('--axis-color').trim();
         svg.append("g")
             .attr("transform", `translate(0,${height - margin.bottom})`)
             .call(d3.axisBottom(x))
-            .style("font-size", "12px");
+            .style("font-size", "12px")
+            .style("color", axisColor);
         
         // Y軸
         svg.append("g")
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y))
-            .style("font-size", "12px");
+            .style("font-size", "12px")
+            .style("color", axisColor);
         
         // 繪製柱狀圖
         svg.selectAll(".growth-bar")
@@ -667,3 +739,40 @@ function updateKPICards() {
         createDonutChart();
         // 初始化粒子動畫
         createParticleAnimation();
+
+// Theme Toggle Functionality
+function toggleTheme() {
+    const body = document.body;
+    const currentTheme = body.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    // Redraw charts to update colors
+    createResponsiveChart();
+    createGrowthChart();
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.querySelector('.theme-icon');
+    if (icon) {
+        icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+}
+
+function loadSavedTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
+
+// Initialize theme on page load
+loadSavedTheme();
+
+// Add event listener to toggle button
+const themeToggleBtn = document.getElementById('theme-toggle');
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+}
