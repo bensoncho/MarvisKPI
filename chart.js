@@ -366,24 +366,6 @@ function updateKPICards() {
                     .attr("r", 6)
                     .style("fill", "#e74c3c");
 
-                // 添加準確率提示框
-                const accuracy = (100 - (d.errorCount / d.value * 100)).toFixed(2);
-                const tooltip = svg.append("g")
-                    .attr("class", "accuracy-tooltip");
-
-                tooltip.append("rect")
-                    .attr("x", x(d.category) + x.bandwidth() / 2 - 40)
-                    .attr("y", y2(100 - (d.errorCount / d.value * 100)) - 30)
-                    .attr("width", 80)
-                    .attr("height", 20)
-                    .attr("rx", 5)
-                    .attr("ry", 5)
-                    .style("fill", "rgba(41, 128, 185, 0.9)");
-
-                tooltip.append("text")
-                    .attr("x", x(d.category) + x.bandwidth() / 2)
-                    .attr("y", y2(100 - (d.errorCount / d.value * 100)) - 15)
-                    .attr("text-anchor", "middle")
                     .style("fill", "white")
                     .style("font-size", "12px")
                     .text(`${accuracy}%`);
