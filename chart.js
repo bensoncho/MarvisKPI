@@ -632,6 +632,46 @@ function updateKPICards() {
         pathLast.transition().duration(1000).style("opacity", 0.7);
         pathCurrent.transition().delay(500).duration(1000).style("opacity", 1);
         
+        // --- 新增：年度總成長率統計 ---
+        const totalCurrent = data.reduce((sum, d) => sum + d.value, 0);
+        const totalLast = lastYearData.reduce((sum, d) => sum + d.value, 0);
+        const totalGrowth = ((totalCurrent - totalLast) / totalLast * 100).toFixed(1);
+        const isPositive = totalGrowth >= 0;
+        
+        // 顯示總成長率文字
+        const statGroup = svg.append("g")
+            .attr("transform", `translate(${margin.left + 20}, ${margin.top + 20})`);
+            
+        statGroup.append("text")
+            .text("年度總成長")
+            .attr("x", 0)
+            .attr("y", 0)
+            .style("font-size", "14px")
+            .style("fill", "var(--text-secondary)")
+            .style("font-weight", "500");
+            
+        statGroup.append("text")
+            .text(`${isPositive ? '+' : ''}${totalGrowth}%`)
+            .attr("x", 0)
+            .attr("y", 35)
+            .style("font-size", "32px")
+            .style("font-weight", "bold")
+            .style("fill", isPositive ? "#2ecc71" : "#e74c3c") // 綠色成長，紅色衰退
+            .style("opacity", 0)
+            .transition()
+            .delay(1500)
+            .duration(800)
+            .style("opacity", 1);
+            
+        statGroup.append("text")
+            .text(`(今年 ${totalCurrent.toLocaleString()} vs 去年 ${totalLast.toLocaleString()})`)
+            .attr("x", 0)
+            .attr("y", 55)
+            .style("font-size", "12px")
+            .style("fill", "var(--text-secondary)")
+            .style("opacity", 0.8);
+        // ---------------------------
+        
         // 數據點與 Tooltips
         const tooltip = d3.select("body").append("div")
             .attr("class", "chart-tooltip")
