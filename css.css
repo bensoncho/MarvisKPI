@@ -156,15 +156,16 @@
         .chart-container {
             width: 100%;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 40px auto;
             position: relative;
-            padding: 40px 20px;
+            padding: 32px;
             background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--container-border);
             box-shadow: 0 8px 32px 0 var(--shadow-color);
-            border-radius: 24px;
+            border-radius: 20px;
+            box-sizing: border-box;
         }
 
         /* Growth Chart Container */
@@ -173,13 +174,14 @@
             max-width: 1200px;
             margin: 40px auto;
             position: relative;
-            padding: 40px 20px;
+            padding: 32px;
             background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--container-border);
             box-shadow: 0 8px 32px 0 var(--shadow-color);
-            border-radius: 24px;
+            border-radius: 20px;
+            box-sizing: border-box;
         }
 
         .chart-section-title {
@@ -223,18 +225,20 @@
         
         /* 分析區塊樣式 - UI/UX Pro Max */
 .analysis-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 32px;
     background: var(--container-bg);
     border: 1px solid var(--container-border);
     box-shadow: 0 8px 32px 0 var(--shadow-color);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: 20px;
-    padding: 32px;
-    margin: 30px auto;
-    max-width: 1200px;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .analysis-container::before {
@@ -363,16 +367,17 @@ pre {
             width: 100%;
             max-width: 1200px;
             margin: 40px auto;
-            padding: 40px;
+            padding: 32px;
             background: var(--container-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--container-border);
             box-shadow: 0 8px 32px 0 var(--shadow-color);
-            border-radius: 24px;
+            border-radius: 20px;
             box-sizing: border-box;
             text-align: center;
             transition: transform 0.3s ease;
+            position: relative;
         }
         .donut-chart-container:hover {
             transform: translateY(-5px);

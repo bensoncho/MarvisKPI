@@ -366,9 +366,7 @@ function updateKPICards() {
                     .attr("r", 6)
                     .style("fill", "#e74c3c");
 
-                    .style("fill", "white")
-                    .style("font-size", "12px")
-                    .text(`${accuracy}%`);
+
             })
             .on("mouseout", function() {
                 // 移除所有 highlight 類
